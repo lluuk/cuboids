@@ -63,7 +63,7 @@ export const use3DScene = () => {
     // Load point cloud
     const loader = new PCDLoader()
     loader.load(PCD_URL, function (points) {
-      scene?.add(points)
+      scene.add(points)
     })
   }
 
@@ -80,7 +80,7 @@ export const use3DScene = () => {
   }
 
   const resetCameraPosition = () => {
-    camera?.position.set(0, 0, 10)
+    camera.position.set(0, 0, 10)
   }
 
   const addPointToScene = (position: THREE.Vector3) => {
@@ -104,10 +104,20 @@ export const use3DScene = () => {
     const position = new THREE.Vector3()
     position.addVectors(x, y).multiplyScalar(0.5)
 
+    const xAxisVector = new THREE.Vector3().subVectors(y, x).normalize()
+    const yAxisVector = new THREE.Vector3().subVectors(z, x).normalize()
+    const zAxisVector = new THREE.Vector3().subVectors(z, y).normalize()
+
+    const rotationMatrix = new THREE.Matrix4()
+    rotationMatrix.makeBasis(xAxisVector, yAxisVector, zAxisVector)
+    const quaternion = new THREE.Quaternion().setFromRotationMatrix(rotationMatrix)
+
     const geometry = new THREE.BoxGeometry(size.x, size.y, size.z)
     const cuboidMaterial = new THREE.MeshBasicMaterial({ color: randomHexColor(), wireframe: true })
     const cuboid = new THREE.Mesh(geometry, cuboidMaterial)
     cuboid.position.copy(position)
+    cuboid.quaternion.copy(quaternion)
+
     scene.add(cuboid)
     cuboids.value.push(cuboid)
   }
@@ -137,6 +147,16 @@ export const use3DScene = () => {
     const intersects = raycaster.intersectObjects(scene.children, true)
 
     if (intersects.length > 0) {
+      // console.log('Intersection point:', intersects[0].point)
+
+      // // Create a sphere at the intersection point for visualization
+      // const intersectionSphere = new THREE.Mesh(
+      //   new THREE.SphereGeometry(0.1, 16, 16),
+      //   new THREE.MeshBasicMaterial({ color: 0xff0000 })
+      // )
+      // intersectionSphere.position.copy(intersects[0].point)
+      // scene.add(intersectionSphere)
+
       const point = intersects[0].point
       addPointToScene(point)
       if (!newCuboidPoints.x) {

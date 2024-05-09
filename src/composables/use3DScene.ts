@@ -38,6 +38,8 @@ const newCuboidPoints = reactive<CuboidPoints>({
 
 const isCreateCuboidModeActivated = ref(false)
 
+const selectedPoints: THREE.Mesh[] = []
+
 const isWebGLSupported = WebGL.isWebGLAvailable()
 const webGLErrorMessage = WebGL.getWebGLErrorMessage()
 
@@ -81,6 +83,21 @@ export const use3DScene = () => {
     camera?.position.set(0, 0, 10)
   }
 
+  const addPointToScene = (position: THREE.Vector3) => {
+    const geometry = new THREE.SphereGeometry(0.1, 8, 8)
+    const material = new THREE.MeshBasicMaterial({ color: 0xff0000 })
+    const point = new THREE.Mesh(geometry, material)
+    point.position.copy(position)
+    scene.add(point)
+    selectedPoints.push(point)
+  }
+
+  const clearSelectedPoints = () => {
+    selectedPoints.forEach((point) => {
+      scene.remove(point)
+    })
+  }
+
   const createCuboid = (x: THREE.Vector3, y: THREE.Vector3, z: THREE.Vector3) => {
     const size = new THREE.Vector3()
     size.subVectors(y, x)
@@ -121,6 +138,7 @@ export const use3DScene = () => {
 
     if (intersects.length > 0) {
       const point = intersects[0].point
+      addPointToScene(point)
       if (!newCuboidPoints.x) {
         newCuboidPoints.x = point
       } else if (!newCuboidPoints.y) {
@@ -128,6 +146,7 @@ export const use3DScene = () => {
       } else if (!newCuboidPoints.z) {
         newCuboidPoints.z = point
         createCuboid(newCuboidPoints.x, newCuboidPoints.y, newCuboidPoints.z)
+        clearSelectedPoints()
         setCreateCuboidMode(false)
         // Reset points for next cuboid creation
         resetCurrentCuboidPoints()

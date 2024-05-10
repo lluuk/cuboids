@@ -44,10 +44,6 @@ const isWebGLSupported = WebGL.isWebGLAvailable()
 const webGLErrorMessage = WebGL.getWebGLErrorMessage()
 
 export const use3DScene = () => {
-  const updateCuboidByIndex = (index: number, updatedCuboid: THREE.Mesh) => {
-    cuboids.value[index] = updatedCuboid
-  }
-
   const setCreateCuboidMode = (mode: boolean) => {
     isCreateCuboidModeActivated.value = mode
   }
@@ -193,7 +189,6 @@ export const use3DScene = () => {
     resetCameraPosition,
     onResize,
     onRendererClick,
-    updateCuboidByIndex,
     newCuboidPoints
   }
 }

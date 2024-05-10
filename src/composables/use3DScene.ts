@@ -125,7 +125,7 @@ export const use3DScene = () => {
   }
 
   const onResize = () => {
-    camera.aspect = window.innerWidth / window.innerHeight
+    camera.aspect = (window.innerWidth - SIDE_PANEL_WIDTH) / window.innerHeight
     camera.updateProjectionMatrix()
     renderer.setSize(window.innerWidth - SIDE_PANEL_WIDTH, window.innerHeight)
   }
